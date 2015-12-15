@@ -1,5 +1,7 @@
 \documentclass[xelatex]{beamer}
 
+\usepackage{xifthen}
+
 \usetheme{Atlassian}
 \usecolortheme{whale}
 \beamertemplatenavigationsymbolsempty
@@ -12,7 +14,9 @@
 }}
 \date{2015--12--18}
 
+\newcommand*{\xep}[2][]{XEP-#2\ifthenelse{\isempty{#1}}{\relax}{: #1}}
 \newcommand*{\stanza}[1]{\textless #1/\textgreater}
+\newcommand*{\nonza}[1]{\textless #1/\textgreater}
 
 \begin{document}
 
@@ -26,11 +30,20 @@
 			\item XML streams (not documents)
 			\item Elements with payloads
 				\begin{itemize}
-					\item Stanzas: message, presence, iq
-					\item Nonzas: auth, compress, \ldots
+					\item Stanzas: \textit{message, presence, iq}
+					\item Nonzas: \textit{auth, compress, \ldots}
 				\end{itemize}
 			\item Minimal core spec with extensions defined in XEP's
 		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+	\begin{quotation}
+		``Extensions are XMPP's greatest strength, and its greatest weakness.''
+		\begin{flushright}
+			--- Pretty much everyone
+		\end{flushright}
+	\end{quotation}
 	\end{frame}
 
 	\begin{frame}
@@ -42,14 +55,14 @@
 			\begin{itemize}
 			\item RFC 6120: XMPP Core
 			\item RFC 6121: XMPP IM (HipChat)
-			\item RFC 7622: XMPP ADDR
+			\item RFC 7622: XMPP ADDR (JID's)
 			\end{itemize}
 		\item XSF
 			\begin{itemize}
-			\item XEP-0045: Multi-User Chat
-			\item XEP-0198: Stream Management
-			\item XEP-0366: Entity Versioning (yey)
-			\item XEP-0367: Message Attaching (more yey)
+				\item \xep[Multi-User Chat]{0045}
+				\item \xep[Stream Management]{0198}
+				\item \xep[Entity Versioning]{0366} (yey)
+				\item \xep[Message Attaching]{0367} (more yey)
 			\item \ldots
 			\end{itemize}
 		\end{itemize}
@@ -93,6 +106,5 @@
 
 	\begin{frame}
 		\frametitle{\stanza{presence}}
-		``Information query'', MUST send a response.
 	\end{frame}
 \end{document}
