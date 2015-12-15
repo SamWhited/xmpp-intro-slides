@@ -1,0 +1,98 @@
+\documentclass[xelatex]{beamer}
+
+\usetheme{Atlassian}
+\usecolortheme{whale}
+\beamertemplatenavigationsymbolsempty
+
+\title[]{XMPP}
+\subtitle{Protocol mechanics and common patterns}
+\author[]{%
+	Sam Whited\\*%
+	{\tiny XSF Editor / HipChat Platform Developer%
+}}
+\date{2015--12--18}
+
+\newcommand*{\stanza}[1]{\textless #1/\textgreater}
+
+\begin{document}
+
+	\begin{frame}
+		\maketitle
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{eXtensible Messaging and Presence Protocol}
+		\begin{itemize}
+			\item XML streams (not documents)
+			\item Elements with payloads
+				\begin{itemize}
+					\item Stanzas: message, presence, iq
+					\item Nonzas: auth, compress, \ldots
+				\end{itemize}
+			\item Minimal core spec with extensions defined in XEP's
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Standards}
+		XMPP standardization managed by the IETF. Responsibility for extensions
+		delegated to the XSF.
+		\begin{itemize}
+			\item IETF
+			\begin{itemize}
+			\item RFC 6120: XMPP Core
+			\item RFC 6121: XMPP IM (HipChat)
+			\item RFC 7622: XMPP ADDR
+			\end{itemize}
+		\item XSF
+			\begin{itemize}
+			\item XEP-0045: Multi-User Chat
+			\item XEP-0198: Stream Management
+			\item XEP-0366: Entity Versioning (yey)
+			\item XEP-0367: Message Attaching (more yey)
+			\item \ldots
+			\end{itemize}
+		\end{itemize}
+	\end{frame}
+
+	\section[]{XMPP Core}
+	\frame{\sectionpage}
+
+	\begin{frame}
+		\frametitle{Stream's}
+		\begin{itemize}
+			\item Client first
+			\item Two streams (input and output)
+			\item Streams are restarted when their state changes (eg. TLS or stream
+				compression is started, feature negotiation happens, etc.)
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Stanza's}
+		The basic primitives of XMPP.
+		\begin{itemize}
+			\item \stanza{message}
+			\item \stanza{iq}
+			\item \stanza{presence}
+		\end{itemize}
+
+		Generally speaking, these should be the only things sent at the top level of
+		an XMPP stream.
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{\stanza{message}}
+		Fire and forget
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{\stanza{iq}}
+		``Information query'', MUST send a response.
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{\stanza{presence}}
+		``Information query'', MUST send a response.
+	\end{frame}
+\end{document}
