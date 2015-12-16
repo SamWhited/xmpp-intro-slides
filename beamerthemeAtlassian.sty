@@ -16,10 +16,20 @@
 \setbeamercolor{title}{fg=black}
 \setbeamercolor{item}{fg=black}
 
+\setbeamertemplate{mini frames}{}
+
 \setbeamertemplate{section page}{%
     \begin{centering}
     \begin{beamercolorbox}[sep=12pt,center]{part title}
     \usebeamerfont{section title}\insertsection\par
+    \end{beamercolorbox}
+    \end{centering}
+}
+
+\setbeamertemplate{subsection page}{%
+    \begin{centering}
+    \begin{beamercolorbox}[sep=12pt,center]{part title}
+    \usebeamerfont{subsection title}\insertsubsection\par
     \end{beamercolorbox}
     \end{centering}
 }
