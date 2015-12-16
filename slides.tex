@@ -1,10 +1,7 @@
 \documentclass[xelatex]{beamer}
 
-\usepackage{xifthen}
-\usepackage{multicol}
-\usepackage{textcomp}
-\usepackage{graphicx}
-\usepackage{listings}
+\usepackage{xifthen,multicol,textcomp,graphicx,listings}
+\usepackage{fontspec}
 
 \usetheme{Atlassian}
 \usecolortheme{whale}
@@ -14,8 +11,9 @@
 \subtitle{Protocol mechanics and common patterns}
 \author[]{%
 	Sam Whited\\*%
-	{\tiny XSF Editor / HipChat Platform Developer%
-}}
+	{\tiny XSF Editor / HipChat Platform Developer}\\*%
+	{\tiny JID: sam@samwhited.com}%
+}
 \date{2015--12--18}
 
 \makeatletter
@@ -31,484 +29,636 @@
 \newcommand*{\xep}[2][]{XEP-#2\ifthenelse{\isempty{#1}}{\relax}{: #1}}
 \newcommand*{\stanza}[1]{\xml{#1/}}
 \newcommand*{\nonza}[1]{\xml{#1/}}
+\newcommand*{\hcstatus}[1]{\textit{Status}: #1\ by HipChat}
+
+\makeatletter
+\newcommand*{\xmppim}{\@ifstar{\@xmppimStar}{\@xmppimNoStar}}
+\newcommand*{\@xmppimNoStar}{RFC 6121: XMPP IM}
+\newcommand*{\@xmppimStar}{XMPP-IM}
+\newcommand*{\xmppcore}{\@ifstar{\@xmppcoreStar}{\@xmppcoreNoStar}}
+\newcommand*{\@xmppcoreNoStar}{RFC 6120: XMPP Core}
+\newcommand*{\@xmppcoreStar}{XMPP-CORE}
+\newcommand*{\xmppaddr}{\@ifstar{\@xmppaddrStar}{\@xmppaddrNoStar}}
+\newcommand*{\@xmppaddrNoStar}{RFC 7622: XMPP Address Format}
+\newcommand*{\@xmppaddrStar}{XMPP-ADDR}
+\makeatother
+
+\definecolor{maroon}{rgb}{0.5,0,0}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\lstdefinelanguage{XML}{
+  basicstyle=\ttfamily,
+  morestring=[s]{"}{"},
+  morecomment=[s]{?}{?},
+  morecomment=[s]{!--}{--},
+  commentstyle=\color{darkgreen},
+  moredelim=[s][\color{black}]{>}{<},
+  moredelim=[s][\color{red}]{\ }{=},
+  stringstyle=\color{blue},
+  identifierstyle=\color{maroon}
+}
+
+% Define a font family that supports IPA characters.
+\newfontfamily\ipa{Charis SIL}
 
 \begin{document}
 
-	\begin{frame}
-		\maketitle
-	\end{frame}
+\begin{frame}
+	\maketitle
+\end{frame}
 
-	\begin{frame}
-		\frametitle{eXtensible Messaging and Presence Protocol}
-		\begin{itemize}
-			\item XML streams (not documents)
-			\item Elements with payloads
-				\begin{itemize}
-					\item Stanzas: \textit{message, presence, iq}
-					\item Nonzas: \textit{auth, compress, \ldots}
-				\end{itemize}
-			\item Minimal core spec with extensions defined in XEP's
-		\end{itemize}
-	\end{frame}
-
-	\begin{frame}
-	\begin{quotation}
-		``Extensions are XMPP's greatest strength, and its greatest weakness.''
-		\begin{flushright}
-			--- Pretty much everyone
-		\end{flushright}
-	\end{quotation}
-	\end{frame}
-
-	\begin{frame}
-		\frametitle{Standards}
-		XMPP standardization managed by the IETF. Responsibility for extensions
-		delegated to the XSF.
-		\begin{itemize}
-			\item IETF
+\begin{frame}
+	\frametitle{eXtensible Messaging and Presence Protocol}
+	\begin{itemize}
+		\item XML streams (not documents)
+		\item Elements with payloads
 			\begin{itemize}
-			\item RFC 6120: XMPP Core
-			\item RFC 6121: XMPP IM (HipChat)
-			\item RFC 7622: XMPP ADDR (JID's)
+				\item Stanzas: \textit{message, presence, iq}
+				\item Nonzas: \textit{auth, compress, \ldots}
 			\end{itemize}
-		\item XSF
-			\begin{itemize}
-				\item \xep[Multi-User Chat]{0045}
-				\item \xep[Stream Management]{0198}
-				\item \xep[Entity Versioning]{0366} (yey)
-				\item \xep[Message Attaching]{0367} (more yey)
-			\item \ldots
-			\end{itemize}
-		\end{itemize}
-	\end{frame}
+		\item Minimal core spec with extensions defined in XEP's
+	\end{itemize}
+\end{frame}
 
-	\section[]{XMPP Core}
-	\frame{\sectionpage}
+\begin{frame}
+\begin{quotation}
+	``Extensions are XMPP's greatest strength, and its greatest weakness.''
+	\begin{flushright}
+		--- Pretty much everyone
+	\end{flushright}
+\end{quotation}
+\end{frame}
 
-	\begin{frame}
-		\frametitle{Stream's}
+\begin{frame}
+	\frametitle{Standards}
+	XMPP standardization managed by the IETF. Responsibility for extensions
+	delegated to the XSF.
+	\begin{itemize}
+		\item IETF
 		\begin{itemize}
-			\item Client first
-			\item Two streams (input and output)
-			\item Streams are restarted when their state changes (eg. TLS or stream
-				compression is started, feature negotiation happens, etc.)
+		\item \xmppcore
+		\item \xmppim\ (HipChat)
+		\item \xmppaddr\ (JID's)
 		\end{itemize}
-	\end{frame}
-
-	\subsection[]{Stream Initialization and Feature Negotiation}
-	\frame{\subsectionpage}
-
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\procinst\\
-				\xml{stream:stream \ldots}
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\procinst\\
-				\xml{stream:stream \ldots}
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-				\vspace{2em}
-				\procinst\\
-				\xml{stream:stream \ldots}
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\procinst\\
-				\xml{stream:stream \ldots}
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-				\vspace{2em}
-				\procinst\\
-				\xml{stream:stream \ldots}\\
-				\xml{stream:features}\\
-				\xml{starttls \ldots}\\
-				\xml{required /}\\
-				\xml*{starttls}\\
-				\xml*{stream:features}
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\procinst\\
-				\xml{stream:stream \ldots}\\
-				\vspace*{8em}
-				\xml{starttls \ldots /}
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-				\vspace{2em}
-				\procinst\\
-				\xml{stream:stream \ldots}\\
-				\xml{stream:features}\\
-				\xml{starttls \ldots}\\
-				\xml{required /}\\
-				\xml*{starttls}\\
-				\xml*{stream:features}
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\procinst\\
-				\xml{stream:stream \ldots}\\
-				\vspace*{8em}
-				\xml{starttls \ldots /}
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-				\vspace{2em}
-				\procinst\\
-				\xml{stream:stream \ldots}\\
-				\xml{stream:features}\\
-				\xml{starttls \ldots}\\
-				\xml{required /}\\
-				\xml*{starttls}\\
-				\xml*{stream:features}\\
-				\vspace*{1em}
-				\xml{proceed \ldots /}
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\procinst\\
-				\xml{stream:stream \ldots}\\
-				\vspace*{8em}
-				\xml{starttls \ldots /}\\
-				\ \\
-				01000111011001010111010000100000011000100110000101100011\\
-				01101011001000000111010001101111001000000111011101101111\\
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-				\vspace*{2em}
-				\procinst\\
-				\xml{stream:stream \ldots}\\
-				\xml{stream:features}\\
-				\xml{starttls \ldots}\\
-				\xml{required /}\\
-				\xml*{starttls}\\
-				\xml*{stream:features}\\
-				\vspace*{1em}
-				\xml{proceed \ldots /}\\
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\procinst\\
-				\xml{stream:stream \ldots}\\
-				\vspace*{8em}
-				\xml{starttls \ldots /}\\
-				\ \\
-				01000111011001010111010000100000011000100110000101100011\\
-				01101011001000000111010001101111001000000111011101101111\\
-				\xml{stream:stream \ldots}
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-				\vspace*{2em}
-				\procinst\\
-				\xml{stream:stream \ldots}\\
-				\xml{stream:features}\\
-				\xml{starttls \ldots}\\
-				\xml{required /}\\
-				\xml*{starttls}\\
-				\xml*{stream:features}\\
-				\vspace*{1em}
-				\xml{proceed \ldots /}\\
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\procinst\\
-				\xml{stream:stream \ldots}\\
-				\vspace*{8em}
-				\xml{starttls \ldots /}\\
-				\ \\
-				01000111011001010111010000100000011000100110000101100011\\
-				01101011001000000111010001101111001000000111011101101111\\
-				\xml{stream:stream \ldots}
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-				\vspace*{2em}
-				\procinst\\
-				\xml{stream:stream \ldots}\\
-				\xml{stream:features}\\
-				\xml{starttls \ldots}\\
-				\xml{required /}\\
-				\xml*{starttls}\\
-				\xml*{stream:features}\\
-				\vspace*{1em}
-				\xml{proceed \ldots /}\\
-				\vspace*{4em}
-				\xml{stream:stream \ldots}
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\vspace*{7em}
-				\xml{starttls \ldots /}\\
-				\vspace*{2em}
-				01000111011001010111010000100000011000100110000101100011\\
-				01101011001000000111010001101111001000000111011101101111\\
-				\xml{stream:stream \ldots}
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-				\xml{stream:stream \ldots}\\
-				\xml{stream:features}\\
-				\xml{starttls \ldots}\\
-				\xml{required /}\\
-				\xml*{starttls}\\
-				\xml*{stream:features}\\
-				\vspace*{1em}
-				\xml{proceed \ldots /}\\
-				\vspace*{4em}
-				\xml{stream:stream \ldots}\\
-				\xml{stream:features \ldots}\\
-				\xml{mechanisms \ldots}\\
-				\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
-				\xml*{mechanisms}\\
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\vspace*{6em}
-				\xml{starttls \ldots /}\\
-				\vspace*{2em}
-				01000111011001010111010000100000011000100110000101100011\\
-				01101011001000000111010001101111001000000111011101101111\\
-				\xml{stream:stream \ldots}\\
-				\vspace*{5em}
-				\xml{auth}
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-				\xml{stream:features}\\
-				\xml{starttls \ldots}\\
-				\xml{required /}\\
-				\xml*{starttls}\\
-				\xml*{stream:features}\\
-				\vspace*{1em}
-				\xml{proceed \ldots /}\\
-				\vspace*{4em}
-				\xml{stream:stream \ldots}\\
-				\xml{stream:features \ldots}\\
-				\xml{mechanisms \ldots}\\
-				\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
-				\xml*{mechanisms}\\
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\vspace*{5em}
-				\xml{starttls \ldots /}\\
-				\vspace*{2em}
-				01000111011001010111010000100000011000100110000101100011\\
-				01101011001000000111010001101111001000000111011101101111\\
-				\xml{stream:stream \ldots}\\
-				\vspace*{5em}
-				\xml{auth}\\
-				\ldots
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-				\xml{starttls \ldots}\\
-				\xml{required /}\\
-				\xml*{starttls}\\
-				\xml*{stream:features}\\
-				\vspace*{1em}
-				\xml{proceed \ldots /}\\
-				\vspace*{4em}
-				\xml{stream:stream \ldots}\\
-				\xml{stream:features \ldots}\\
-				\xml{mechanisms \ldots}\\
-				\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
-				\xml*{mechanisms}\\
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\vspace*{4em}
-				\xml{starttls \ldots /}\\
-				\vspace*{2em}
-				01000111011001010111010000100000011000100110000101100011\\
-				01101011001000000111010001101111001000000111011101101111\\
-				\xml{stream:stream \ldots}\\
-				\vspace*{5em}
-				\xml{auth}\\
-				\ldots\\
-				\ldots
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-				\xml{required /}\\
-				\xml*{starttls}\\
-				\xml*{stream:features}\\
-				\vspace*{1em}
-				\xml{proceed \ldots /}\\
-				\vspace*{4em}
-				\xml{stream:stream \ldots}\\
-				\xml{stream:features \ldots}\\
-				\xml{mechanisms \ldots}\\
-				\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
-				\xml*{mechanisms}\\
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-	\begin{frame}
-		\begin{multicols}{2}
-			\begin{flushleft}
-				\centerline{Client}
-				\vspace*{3em}
-				\xml{starttls \ldots /}\\
-				\vspace*{2em}
-				01000111011001010111010000100000011000100110000101100011\\
-				01101011001000000111010001101111001000000111011101101111\\
-				\xml{stream:stream \ldots}\\
-				\vspace*{5em}
-				\xml{auth}\\
-				\ldots\\
-				\ldots\\
-				\ldots
-			\end{flushleft}
-			\columnbreak
-			\begin{flushleft}
-				\centerline{Server}
-				\xml*{starttls}\\
-				\xml*{stream:features}\\
-				\vspace*{1em}
-				\xml{proceed \ldots /}\\
-				\vspace*{4em}
-				\xml{stream:stream \ldots}\\
-				\xml{stream:features \ldots}\\
-				\xml{mechanisms \ldots}\\
-				\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
-				\xml*{mechanisms}\\
-			\end{flushleft}
-		\end{multicols}
-	\end{frame}
-
-	\begin{frame}
-		\vspace*{\fill}
-		\begin{center}
-			\includegraphics[width=90mm]{images/deeper.jpg}
-		\end{center}
-		\vspace*{\fill}
-	\end{frame}
-
-	\subsection[]{Inside the stream}
-	\frame{\subsectionpage}
-
-	\begin{frame}
-		\frametitle{Stanza's}
-		The basic primitives of XMPP.
+	\item XSF
 		\begin{itemize}
-			\item \stanza{message}
-			\item \stanza{iq}
-			\item \stanza{presence}
+			\item \xep[Multi-User Chat]{0045}
+			\item \xep[Stream Management]{0198}
+			\item \xep[Entity Versioning]{0366} (yey)
+			\item \xep[Message Attaching]{0367} (more yey)
+		\item \ldots
 		\end{itemize}
+	\end{itemize}
+\end{frame}
 
-		Generally speaking, these should be the only things sent at the top level of
-		an XMPP stream.
-	\end{frame}
+\section[]{XMPP Core}
+\frame{\sectionpage}
 
-	\begin{frame}[fragile]
-		\frametitle{\stanza{message}}
-		Fire and forget
-		\begin{lstlisting}[frame=single]
-		<message id='262' type='chat'
-		 	to='feste@shakespeare.lit/house'>
-			<body>What's a drunken man like, fool?</body>
-			<request xmlns='urn:xmpp:receipts'/>
-			<thread>pNltztLMBQhqakHwcFd</thread>
-		</message>
-		\end{lstlisting}
-	\end{frame}
+\begin{frame}
+	\frametitle{Stream's}
+	\begin{itemize}
+		\item Client first
+		\item Two streams (input and output)
+		\item Streams are restarted when their state changes (eg. TLS or stream
+			compression is started, feature negotiation happens, etc.)
+	\end{itemize}
+\end{frame}
 
-	\begin{frame}[fragile]
-		\frametitle{\stanza{iq}}
-		``Information query'', MUST send a response.
-		\begin{lstlisting}[frame=single]
-		<iq from='capulet.lit'
-		 	to='juliet@capulet.lit/balcony'
-		 	id='s2c1' type='get'>
-		 	<ping xmlns='urn:xmpp:ping'/>
-		</iq>
+\subsection[]{Stream Initialization and Feature Negotiation}
+\frame{\subsectionpage}
 
-		<iq to='capulet.lit'
-		 	from='juliet@capulet.lit/balcony'
-		 	id='s2c1' type='result'/>
-		\end{lstlisting}
-	\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\procinst\\
+			\xml{stream:stream \ldots}
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\procinst\\
+			\xml{stream:stream \ldots}
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\vspace{2em}
+			\procinst\\
+			\xml{stream:stream \ldots}
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\procinst\\
+			\xml{stream:stream \ldots}
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\vspace{2em}
+			\procinst\\
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features}\\
+			\xml{starttls \ldots}\\
+			\xml{required /}\\
+			\xml*{starttls}\\
+			\xml*{stream:features}
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\procinst\\
+			\xml{stream:stream \ldots}\\
+			\vspace*{8em}
+			\xml{starttls \ldots /}
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\vspace{2em}
+			\procinst\\
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features}\\
+			\xml{starttls \ldots}\\
+			\xml{required /}\\
+			\xml*{starttls}\\
+			\xml*{stream:features}
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\procinst\\
+			\xml{stream:stream \ldots}\\
+			\vspace*{8em}
+			\xml{starttls \ldots /}
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\vspace{2em}
+			\procinst\\
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features}\\
+			\xml{starttls \ldots}\\
+			\xml{required /}\\
+			\xml*{starttls}\\
+			\xml*{stream:features}\\
+			\vspace*{1em}
+			\xml{proceed \ldots /}
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\procinst\\
+			\xml{stream:stream \ldots}\\
+			\vspace*{8em}
+			\xml{starttls \ldots /}\\
+			\ \\
+			01000111011001010111010000100000011000100110000101100011\\
+			01101011001000000111010001101111001000000111011101101111\\
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\vspace*{2em}
+			\procinst\\
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features}\\
+			\xml{starttls \ldots}\\
+			\xml{required /}\\
+			\xml*{starttls}\\
+			\xml*{stream:features}\\
+			\vspace*{1em}
+			\xml{proceed \ldots /}\\
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\procinst\\
+			\xml{stream:stream \ldots}\\
+			\vspace*{8em}
+			\xml{starttls \ldots /}\\
+			\ \\
+			01000111011001010111010000100000011000100110000101100011\\
+			01101011001000000111010001101111001000000111011101101111\\
+			\xml{stream:stream \ldots}
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\vspace*{2em}
+			\procinst\\
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features}\\
+			\xml{starttls \ldots}\\
+			\xml{required /}\\
+			\xml*{starttls}\\
+			\xml*{stream:features}\\
+			\vspace*{1em}
+			\xml{proceed \ldots /}\\
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\procinst\\
+			\xml{stream:stream \ldots}\\
+			\vspace*{8em}
+			\xml{starttls \ldots /}\\
+			\ \\
+			01000111011001010111010000100000011000100110000101100011\\
+			01101011001000000111010001101111001000000111011101101111\\
+			\xml{stream:stream \ldots}
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\vspace*{2em}
+			\procinst\\
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features}\\
+			\xml{starttls \ldots}\\
+			\xml{required /}\\
+			\xml*{starttls}\\
+			\xml*{stream:features}\\
+			\vspace*{1em}
+			\xml{proceed \ldots /}\\
+			\vspace*{4em}
+			\xml{stream:stream \ldots}
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\vspace*{7em}
+			\xml{starttls \ldots /}\\
+			\vspace*{2em}
+			01000111011001010111010000100000011000100110000101100011\\
+			01101011001000000111010001101111001000000111011101101111\\
+			\xml{stream:stream \ldots}
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features}\\
+			\xml{starttls \ldots}\\
+			\xml{required /}\\
+			\xml*{starttls}\\
+			\xml*{stream:features}\\
+			\vspace*{1em}
+			\xml{proceed \ldots /}\\
+			\vspace*{4em}
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features \ldots}\\
+			\xml{mechanisms \ldots}\\
+			\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
+			\xml*{mechanisms}\\
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\vspace*{6em}
+			\xml{starttls \ldots /}\\
+			\vspace*{2em}
+			01000111011001010111010000100000011000100110000101100011\\
+			01101011001000000111010001101111001000000111011101101111\\
+			\xml{stream:stream \ldots}\\
+			\vspace*{5em}
+			\xml{auth}
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\xml{stream:features}\\
+			\xml{starttls \ldots}\\
+			\xml{required /}\\
+			\xml*{starttls}\\
+			\xml*{stream:features}\\
+			\vspace*{1em}
+			\xml{proceed \ldots /}\\
+			\vspace*{4em}
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features \ldots}\\
+			\xml{mechanisms \ldots}\\
+			\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
+			\xml*{mechanisms}\\
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\vspace*{5em}
+			\xml{starttls \ldots /}\\
+			\vspace*{2em}
+			01000111011001010111010000100000011000100110000101100011\\
+			01101011001000000111010001101111001000000111011101101111\\
+			\xml{stream:stream \ldots}\\
+			\vspace*{5em}
+			\xml{auth}\\
+			\ldots
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\xml{starttls \ldots}\\
+			\xml{required /}\\
+			\xml*{starttls}\\
+			\xml*{stream:features}\\
+			\vspace*{1em}
+			\xml{proceed \ldots /}\\
+			\vspace*{4em}
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features \ldots}\\
+			\xml{mechanisms \ldots}\\
+			\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
+			\xml*{mechanisms}\\
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\vspace*{4em}
+			\xml{starttls \ldots /}\\
+			\vspace*{2em}
+			01000111011001010111010000100000011000100110000101100011\\
+			01101011001000000111010001101111001000000111011101101111\\
+			\xml{stream:stream \ldots}\\
+			\vspace*{5em}
+			\xml{auth}\\
+			\ldots\\
+			\ldots
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\xml{required /}\\
+			\xml*{starttls}\\
+			\xml*{stream:features}\\
+			\vspace*{1em}
+			\xml{proceed \ldots /}\\
+			\vspace*{4em}
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features \ldots}\\
+			\xml{mechanisms \ldots}\\
+			\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
+			\xml*{mechanisms}\\
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\vspace*{3em}
+			\xml{starttls \ldots /}\\
+			\vspace*{2em}
+			01000111011001010111010000100000011000100110000101100011\\
+			01101011001000000111010001101111001000000111011101101111\\
+			\xml{stream:stream \ldots}\\
+			\vspace*{5em}
+			\xml{auth}\\
+			\ldots\\
+			\ldots\\
+			\ldots
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\xml*{starttls}\\
+			\xml*{stream:features}\\
+			\vspace*{1em}
+			\xml{proceed \ldots /}\\
+			\vspace*{4em}
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features \ldots}\\
+			\xml{mechanisms \ldots}\\
+			\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
+			\xml*{mechanisms}\\
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
 
-	\begin{frame}
-		\frametitle{\stanza{presence}}
-	\end{frame}
+\begin{frame}
+\vspace*{\fill}
+\hspace*{1em}\includegraphics[width=75mm]{images/deeper.jpg}
+\end{frame}
+
+\subsection[]{Inside the stream}
+\begin{frame}
+\subsectionpage
+\centerline{(post resource binding)}
+\end{frame}
+
+\begin{frame}
+\vspace*{\fill}
+\textbf{Stanza} \ipa{/ˈstænzə/} (\kern1pt\textit{plural} stanzas) n.
+\begin{enumerate}
+	\item A unit of a poem, written or printed as a paragraph; equivalent to a verse.
+	\item (computing) An XML element which acts as basic unit of meaning in XMPP.
+\end{enumerate}
+\vspace*{\fill}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Stanza's}
+	The basic primitives of XMPP.
+	\begin{itemize}
+		\item \stanza{message}
+		\item \stanza{iq}
+		\item \stanza{presence}
+	\end{itemize}
+
+	Generally speaking, these should be the only things sent at the top level of
+	an XMPP stream (with a few exceptions, eg. \xep{0198} keep-alive's).
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{\stanza{message}}
+	\begin{itemize}
+	\item One-to-one
+	\item Fire and forget
+	\item No delivery guarantee (ack)
+	\item Useful for anything that does not require a response (chat messages, errors, etc.)
+	\end{itemize}
+	\begin{lstlisting}[frame=single,language=xml]
+<message id='262' type='chat'
+  to='feste@shakespeare.lit/house'>
+  <body>
+    What's a drunken man like, fool?
+  </body>
+  <request xmlns='urn:xmpp:receipts'/>
+  <thread>pNltztLMBQhqakHwcFd</thread>
+</message>
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{\stanza{iq}}
+	``Information query''
+		\begin{itemize}
+		\item One-to-one
+		\item MUST send a response
+		\item At-least-once delivery (cache and resend if no ack)
+		\end{itemize}
+\begin{lstlisting}[frame=single,language=xml]
+<iq from='capulet.lit'
+  to='juliet@capulet.lit/balcony'
+  id='s2c1' type='get'>
+  <ping xmlns='urn:xmpp:ping'/>
+</iq>
+
+<iq to='capulet.lit'
+  from='juliet@capulet.lit/balcony'
+  id='s2c1' type='result'/>
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{\stanza{presence}}
+	\begin{itemize}
+	\item Broadcast mechanism
+	\begin{itemize}
+		\item Directed presence: one-to-one
+		\item Broadcast presence: one-to-many
+	\end{itemize}
+	\item Useful for:
+	\begin{itemize}
+		\item Presence and status updates (online, away, etc.)
+		\item Capabilities / supported features
+		\item Joining a conference room
+	\end{itemize}
+	\end{itemize}
+\begin{lstlisting}[frame=single,language=xml]
+<presence id='24'
+  from='prospero@shakespeare.lit/cell'>
+  <status>
+    Now my charms are all o'erthrown
+  </status>
+  <priority>40</priority>
+  <show>away</show>
+</presence>
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+\begin{quotation}
+``XMPP is Sacred''
+\begin{flushright}
+---\xep[XMPP Design Guidelines]{0134}
+\end{flushright}
+When designing a new extension, think very hard about your life before you
+invent new top level elements (stanza's) and never modify core protocol.
+\end{quotation}
+\end{frame}
+
+\section[]{Useful Extensions}
+\frame{\sectionpage}
+
+\begin{frame}
+	\frametitle{\xep[Message Carbons]{0280}}
+	\begin{itemize}
+		\item Copies incoming messages to resources that would otherwise not have received the message.
+		\item Copies outgoing messages to your other connected resources
+		\item Current behavior not well defined for special messages (Typing notifications, read state markers, etc.)
+		\item Isode complains a lot, but it's simple and gets the job done
+		\item One day might be replaced by\ldots
+	\end{itemize}
+	\hcstatus{Not supported}
+\end{frame}
+
+\begin{frame}
+	\frametitle{\xep[Message Archive Management (MAM)]{0313}}
+	\begin{itemize}
+		\item Stores incoming and outgoing messages on server
+		\item New clients can access history
+		\item Clients that have been offline can catch up
+		\item Currently relies on synchronized clocks between client and server (facepalm)
+	\end{itemize}
+	Work is being done to make it possible to query the archive for messages after
+	a given ID.
+
+	\hcstatus{Not supported}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Myth № 1: XMPP is bad on mobile}
+	Turns out that XMPP is actually \emph{very} good on mobile devices, both on
+	battery and bandwidth. Historically, mobile \emph{clients} have been very bad.
+\end{frame}
+
+\begin{frame}
+	\centerline{Things are getting better though\ldots}
+	\begin{center}
+		\includegraphics[height=75mm]{images/conversations_screenshot.png}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{\xep[Mobile Considerations]{0268}}
+	 Attempts to tell you everything you need to know about not eating your users
+	 battery (with citations).\\
+	 \vspace{1em}
+	 TL;DR --- Implement CSI, and when you detect that something is already being
+	 sent/received: Send/receive as much data as you can at once so the radio can
+	 go back to sleep. Compression is also good.
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{\xep[Client State Indication (CSI)]{0352}}
+	Clients indicate when they become ``inactive'' (screen goes off, app loses
+	focus, etc.) or ``active'' with some simple nonza's. Server does what it wants
+	with that data (eg. don't send presence or typing notifications).
+	\vspace*{\fill}
+\begin{lstlisting}[frame=single,language=xml]
+<active xmlns='urn:xmpp:csi:0'/>
+<inactive xmlns='urn:xmpp:csi:0'/>
+\end{lstlisting}
+\vspace*{\fill}
+\end{frame}
+
 \end{document}
