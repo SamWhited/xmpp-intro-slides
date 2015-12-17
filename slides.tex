@@ -102,11 +102,12 @@
 
   \path[every node/.style={font=\sffamily\small}]
     (1) edge node [right] {} (10)
-    (2) edge node [right] {} (1)
+    (2) edge [bend left] node [right] {} (1)
         edge node [right] {} (5)
         edge node [right] {} (6)
         edge node [right] {} (7)
-    (3) edge node [right] {} (2)
+    (3) edge [bend left] node [right] {} (2)
+        edge [bend right] node [right] {} (1)
     (4) edge [bend left] node[right] {} (1)
         edge node [left] {} (8)
         edge [bend left] node [left] {} (9);
