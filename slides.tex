@@ -583,6 +583,30 @@
 \end{lstlisting}
 \end{frame}
 
+\begin{frame}
+	Stanza's (and some nonza's) MAY have a `type' attribute. For messages, the
+	type conveys semantic meaning and is non-normative. For IQ's, the type is much
+	more strictly controlled.
+	\begin{multicols}{2}
+		Message types
+	\begin{itemize}
+		\item\textit{normal}
+		\item\textit{chat}
+		\item\textit{groupchat}
+		\item\textit{headline}
+		\item\textit{error}
+	\end{itemize}
+	\columnbreak
+	IQ types
+	\begin{itemize}
+		\item\textit{get}
+		\item\textit{set}
+		\item\textit{result}
+		\item\textit{error}
+	\end{itemize}
+	\end{multicols}
+\end{frame}
+
 \begin{frame}[fragile]
 	\frametitle{\stanza{iq}}
 	``Information query''
