@@ -613,7 +613,7 @@
 		\begin{itemize}
 		\item One-to-one
 		\item MUST send a response
-		\item At-least-once delivery (cache and resend if no ack)
+		\item At-least-once delivery (cache and resend if no result)
 		\end{itemize}
 \begin{lstlisting}[frame=single,language=xml]
 <iq from='capulet.lit'
@@ -631,16 +631,10 @@
 \begin{frame}[fragile]
 	\frametitle{\stanza{presence}}
 	\begin{itemize}
-	\item Broadcast mechanism
-	\begin{itemize}
-		\item Directed presence: one-to-one
-		\item Broadcast presence: one-to-many
-	\end{itemize}
-	\item Useful for:
-	\begin{itemize}
-		\item Presence and status updates (online, away, etc.)
-		\item Capabilities / supported features
-	\end{itemize}
+	\item Directed (one-to-one) or broadcast (one-to-many)
+	\item Advertises entity availability to the network
+	\item Payload's for broadcast can ride along (entity capabilities, status
+		messages, etc.)
 	\end{itemize}
 \begin{lstlisting}[frame=single,language=xml]
 <presence id='24'
@@ -700,19 +694,27 @@ invent new top level elements (stanza's), and never modify core protocol.
 
 \begin{frame}
 	\frametitle{\xep[Mobile Considerations]{0268}}
-	 Attempts to tell you everything you need to know about not eating your users
-	 battery (with citations).\\
-	 \vspace{1em}
-	 TL;DR --- Implement CSI, and when you detect that something is already being
-	 sent/received: Send/receive as much data as you can at once so the radio can
-	 go back to sleep. Compression is also good.
+	\begin{flushleft}
+		Attempts to tell you everything you need to know about not eating your users'
+		battery (with citations).
+	\end{flushleft}
+	\begin{flushleft}
+		TL;DR --- Implement CSI, and when you detect that something is already being
+		sent/received: Send/receive as much data as you can at once so the radio can
+		go back to sleep. Compression is also good.
+	\end{flushleft}
+	\begin{flushleft}
+		Disclaimer: I wrote this one and don't do much mobile development. It's
+		probably all wrong (but seems to be working out so far).
+	\end{flushleft}
 \end{frame}
 
 \begin{frame}[fragile]
 	\frametitle{\xep[Client State Indication (CSI)]{0352}}
 	Clients indicate when they become ``inactive'' (screen goes off, app loses
 	focus, etc.) or ``active'' with some simple nonza's. Server does what it wants
-	with that data (eg. don't send presence or typing notifications).
+	with that data (eg. don't send presence or typing notifications and start
+	sending push notifications).
 	\vspace*{\fill}
 \begin{lstlisting}[frame=single,language=xml]
 <active xmlns='urn:xmpp:csi:0'/>
