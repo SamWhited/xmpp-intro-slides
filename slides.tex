@@ -1,4 +1,4 @@
-\documentclass[xelatex]{beamer}
+\documentclass[xelatex,aspectratio=169]{beamer}
 
 \usepackage{xifthen,multicol,textcomp,graphicx,listings}
 \usepackage{fontspec}
@@ -323,11 +323,12 @@
 		\end{flushleft}
 	\end{multicols}
 \end{frame}
+{
 \begin{frame}
 	\begin{multicols}{2}
 		\begin{flushleft}
 			\centerline{Client}
-			\vspace*{7em}
+			\vspace*{5em}
 			\xml{starttls \ldots /}\\
 			\vspace*{2em}
 			01000111011001010111010000100000011000100110000101100011\\
@@ -337,8 +338,6 @@
 		\columnbreak
 		\begin{flushleft}
 			\centerline{Server}
-			\xml{stream:stream \ldots}\\
-			\xml{stream:features}\\
 			\xml{starttls \ldots}\\
 			\xml{required /}\\
 			\xml*{starttls}\\
@@ -358,7 +357,7 @@
 	\begin{multicols}{2}
 		\begin{flushleft}
 			\centerline{Client}
-			\vspace*{6em}
+			\vspace*{4em}
 			\xml{starttls \ldots /}\\
 			\vspace*{2em}
 			01000111011001010111010000100000011000100110000101100011\\
@@ -366,72 +365,6 @@
 			\xml{stream:stream \ldots}\\
 			\vspace*{5em}
 			\xml{auth}
-		\end{flushleft}
-		\columnbreak
-		\begin{flushleft}
-			\centerline{Server}
-			\xml{stream:features}\\
-			\xml{starttls \ldots}\\
-			\xml{required /}\\
-			\xml*{starttls}\\
-			\xml*{stream:features}\\
-			\vspace*{1em}
-			\xml{proceed \ldots /}\\
-			\vspace*{4em}
-			\xml{stream:stream \ldots}\\
-			\xml{stream:features \ldots}\\
-			\xml{mechanisms \ldots}\\
-			\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
-			\xml*{mechanisms}\\
-		\end{flushleft}
-	\end{multicols}
-\end{frame}
-\begin{frame}
-	\begin{multicols}{2}
-		\begin{flushleft}
-			\centerline{Client}
-			\vspace*{5em}
-			\xml{starttls \ldots /}\\
-			\vspace*{2em}
-			01000111011001010111010000100000011000100110000101100011\\
-			01101011001000000111010001101111001000000111011101101111\\
-			\xml{stream:stream \ldots}\\
-			\vspace*{5em}
-			\xml{auth}\\
-			\ldots
-		\end{flushleft}
-		\columnbreak
-		\begin{flushleft}
-			\centerline{Server}
-			\xml{starttls \ldots}\\
-			\xml{required /}\\
-			\xml*{starttls}\\
-			\xml*{stream:features}\\
-			\vspace*{1em}
-			\xml{proceed \ldots /}\\
-			\vspace*{4em}
-			\xml{stream:stream \ldots}\\
-			\xml{stream:features \ldots}\\
-			\xml{mechanisms \ldots}\\
-			\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
-			\xml*{mechanisms}\\
-		\end{flushleft}
-	\end{multicols}
-\end{frame}
-\begin{frame}
-	\begin{multicols}{2}
-		\begin{flushleft}
-			\centerline{Client}
-			\vspace*{4em}
-			\xml{starttls \ldots /}\\
-			\vspace*{2em}
-			01000111011001010111010000100000011000100110000101100011\\
-			01101011001000000111010001101111001000000111011101101111\\
-			\xml{stream:stream \ldots}\\
-			\vspace*{5em}
-			\xml{auth}\\
-			\ldots\\
-			\ldots
 		\end{flushleft}
 		\columnbreak
 		\begin{flushleft}
@@ -462,8 +395,6 @@
 			\xml{stream:stream \ldots}\\
 			\vspace*{5em}
 			\xml{auth}\\
-			\ldots\\
-			\ldots\\
 			\ldots
 		\end{flushleft}
 		\columnbreak
@@ -482,10 +413,71 @@
 		\end{flushleft}
 	\end{multicols}
 \end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\vspace*{2em}
+			\xml{starttls \ldots /}\\
+			\vspace*{2em}
+			01000111011001010111010000100000011000100110000101100011\\
+			01101011001000000111010001101111001000000111011101101111\\
+			\xml{stream:stream \ldots}\\
+			\vspace*{5em}
+			\xml{auth}\\
+			\ldots\\
+			\ldots
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\xml*{stream:features}\\
+			\vspace*{1em}
+			\xml{proceed \ldots /}\\
+			\vspace*{4em}
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features \ldots}\\
+			\xml{mechanisms \ldots}\\
+			\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
+			\xml*{mechanisms}\\
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+\begin{frame}
+	\begin{multicols}{2}
+		\begin{flushleft}
+			\centerline{Client}
+			\vspace*{1em}
+			\xml{starttls \ldots /}\\
+			\vspace*{2em}
+			01000111011001010111010000100000011000100110000101100011\\
+			01101011001000000111010001101111001000000111011101101111\\
+			\xml{stream:stream \ldots}\\
+			\vspace*{5em}
+			\xml{auth}\\
+			\ldots\\
+			\ldots\\
+			\ldots
+		\end{flushleft}
+		\columnbreak
+		\begin{flushleft}
+			\centerline{Server}
+			\vspace*{1em}
+			\xml{proceed \ldots /}\\
+			\vspace*{4em}
+			\xml{stream:stream \ldots}\\
+			\xml{stream:features \ldots}\\
+			\xml{mechanisms \ldots}\\
+			\xml{mechanism}\texttt{SCRAM-SHA-1}\xml*{mechanism}
+			\xml*{mechanisms}\\
+		\end{flushleft}
+	\end{multicols}
+\end{frame}
+}
 
 \begin{frame}
-\vspace*{\fill}
-\hspace*{1em}\includegraphics[width=75mm]{images/deeper.jpg}
+	\vspace*{\fill}
+	\includegraphics[width=.75\textwidth]{images/deeper.jpg}
 \end{frame}
 
 \subsection[]{Inside the stream}
