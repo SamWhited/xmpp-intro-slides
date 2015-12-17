@@ -1,6 +1,7 @@
 \ProvidesPackage{xmpp}
 
 \RequirePackage{listings}
+\RequirePackage{hyperref}
 
 \makeatletter
 \newcommand*{\xml}{\@ifstar{\@xmlStar}{\@xmlNoStar}}
@@ -12,7 +13,7 @@
 	#1=\textquotesingle #2\textquotesingle%
 }
 \newcommand*{\procinst}{\xml{?xml \attr{version}{1.0}?}}
-\newcommand*{\xep}[2][]{XEP-#2\ifthenelse{\isempty{#1}}{\relax}{: #1}}
+\newcommand*{\xep}[2][]{\href{https://xmpp.org/extensions/xep-#2.html}{XEP-#2\ifthenelse{\isempty{#1}}{\relax}{: #1}}}
 \newcommand*{\stanza}[1]{\xml{#1/}}
 \newcommand*{\nonza}[1]{\xml{#1/}}
 \newcommand*{\hcstatus}[1]{\textit{Status}: #1\ by HipChat}
