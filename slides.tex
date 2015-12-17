@@ -609,8 +609,7 @@
 \end{frame}
 
 \begin{frame}[fragile]
-	\frametitle{\stanza{iq}}
-	``Information query''
+	\frametitle{\stanza{iq} (``Information query'')}
 		\begin{itemize}
 		\item One-to-one
 		\item MUST send a response
@@ -659,6 +658,24 @@
 When designing a new extension, think very hard about your life before you
 invent new top level elements (stanza's), and never modify core protocol.
 \end{quotation}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Namespacing}
+	\begin{flushleft}
+		Stanza payloads are handled based on their XML namespace. By recent
+		convention, namespaces are versioned URN's.
+	\end{flushleft}
+\begin{lstlisting}[frame=single,language=xml]
+<message from='juliet@capulet.lit'
+         to='romeo@montague.lit/orchard'
+         type='headline' id='tfasd'>
+  <result xmlns='urn:xmpp:mam:1' queryid='f27'
+          id='5d398-28273-f7382'>
+  ...
+  </result>
+</message>
+\end{lstlisting}
 \end{frame}
 
 \section[]{Useful Extensions}
