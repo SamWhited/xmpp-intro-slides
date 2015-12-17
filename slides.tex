@@ -1,9 +1,8 @@
 \documentclass[xelatex,aspectratio=169]{beamer}
 
-\usepackage{xifthen,multicol,textcomp,graphicx,listings}
+\usepackage{xifthen,multicol,textcomp,graphicx}
 \usepackage{fontspec}
-\usepackage{tikz}
-\usepackage{amsmath}
+\usepackage{tikz,amsmath,xmpp}
 \usetikzlibrary{arrows,decorations.pathreplacing}
 
 \usetheme{Atlassian}
@@ -18,47 +17,6 @@
 	{\tiny JID: sam@samwhited.com}%
 }
 \date{2015--12--18}
-
-\makeatletter
-\newcommand*{\xml}{\@ifstar{\@xmlStar}{\@xmlNoStar}}
-\newcommand*{\@xmlNoStar}[1]{\texttt{\textless #1\textgreater}}
-\newcommand*{\@xmlStar}[1]{\texttt{\textless/#1\textgreater}}
-\makeatother
-
-\newcommand*{\attr}[2]{%
-	#1=\textquotesingle #2\textquotesingle%
-}
-\newcommand*{\procinst}{\xml{?xml \attr{version}{1.0}?}}
-\newcommand*{\xep}[2][]{XEP-#2\ifthenelse{\isempty{#1}}{\relax}{: #1}}
-\newcommand*{\stanza}[1]{\xml{#1/}}
-\newcommand*{\nonza}[1]{\xml{#1/}}
-\newcommand*{\hcstatus}[1]{\textit{Status}: #1\ by HipChat}
-
-\makeatletter
-\newcommand*{\xmppim}{\@ifstar{\@xmppimStar}{\@xmppimNoStar}}
-\newcommand*{\@xmppimNoStar}{RFC 6121: XMPP IM}
-\newcommand*{\@xmppimStar}{XMPP-IM}
-\newcommand*{\xmppcore}{\@ifstar{\@xmppcoreStar}{\@xmppcoreNoStar}}
-\newcommand*{\@xmppcoreNoStar}{RFC 6120: XMPP Core}
-\newcommand*{\@xmppcoreStar}{XMPP-CORE}
-\newcommand*{\xmppaddr}{\@ifstar{\@xmppaddrStar}{\@xmppaddrNoStar}}
-\newcommand*{\@xmppaddrNoStar}{RFC 7622: XMPP Address Format}
-\newcommand*{\@xmppaddrStar}{XMPP-ADDR}
-\makeatother
-
-\definecolor{maroon}{rgb}{0.5,0,0}
-\definecolor{darkgreen}{rgb}{0,0.5,0}
-\lstdefinelanguage{XML}{
-  basicstyle=\ttfamily,
-  morestring=[s]{"}{"},
-  morecomment=[s]{?}{?},
-  morecomment=[s]{!--}{--},
-  commentstyle=\color{darkgreen},
-  moredelim=[s][\color{black}]{>}{<},
-  moredelim=[s][\color{red}]{\ }{=},
-  stringstyle=\color{blue},
-  identifierstyle=\color{maroon}
-}
 
 % Define a font family that supports IPA characters.
 \newfontfamily\ipa{Charis SIL}
