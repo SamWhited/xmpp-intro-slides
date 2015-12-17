@@ -107,16 +107,15 @@
 \end{center}
 \end{frame}
 
+\newcommand*{\tikzmark}[1]{\tikz[overlay, remember picture] \coordinate ({#1});}
+
 \begin{frame}
 	\frametitle{Anatomy of a JID}
 	\Large
 	\begin{figure}
-		\newcommand{\tikzmark}[1]{\tikz[overlay, remember picture] \coordinate (#1);}
-
-		\tikzmark{begin}%
-		viola\tikzmark{atsep}@%
+		\tikzmark{begin}viola\tikzmark{atsep}@%
 		\tikzmark{domainpart}shakespeare.lit\tikzmark{slashsep}/%
-		\tikzmark{resourcepart}ilyria\tikzmark{end}
+		\tikzmark{resourcepart}ilyria\tikzmark{end}%
 
 		\tikz[overlay,remember picture] {
 			\draw[decorate,decoration={brace,raise=5mm,amplitude=20pt}] (begin.north west) -- node [above=2.5em] {JID} (end.north east) ;
@@ -130,10 +129,7 @@
 	\frametitle{Anatomy of a JID}
 	\Large
 	\begin{figure}
-		\newcommand{\tikzmark}[1]{\tikz[overlay, remember picture] \coordinate (#1);}
-
-		\tikzmark{begin}%
-		viola\tikzmark{atsep}@%
+		\tikzmark{begin}viola\tikzmark{atsep}@%
 		\tikzmark{domainpart}shakespeare.lit\tikzmark{slashsep}/%
 		\tikzmark{resourcepart}ilyria\tikzmark{end}
 
@@ -149,10 +145,7 @@
 	\frametitle{Anatomy of a JID}
 	\Large
 	\begin{figure}
-		\newcommand{\tikzmark}[1]{\tikz[overlay, remember picture] \coordinate (#1);}
-
-		\tikzmark{begin}%
-		viola\tikzmark{atsep}@%
+		\tikzmark{begin}viola\tikzmark{atsep}@%
 		\tikzmark{domainpart}shakespeare.lit\tikzmark{slashsep}/%
 		\tikzmark{resourcepart}ilyria\tikzmark{end}
 
