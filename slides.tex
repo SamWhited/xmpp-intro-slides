@@ -696,4 +696,15 @@ invent new top level elements (stanza's), and never modify core protocol.
 \vspace*{\fill}
 \end{frame}
 
+\begin{frame}
+	\frametitle{\xep[Stream Management]{0198}}
+	\begin{itemize}
+		\item Stream resumption (very fast reconnects)
+		\item Stanza acknowledgements
+	\end{itemize}
+
+	Has some problems around ``zombie state's'' where clients are offline, but the
+	stream hasn't timed out yet. Like most things, the answer is probably MAM.
+\end{frame}
+
 \end{document}
