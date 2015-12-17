@@ -3,7 +3,8 @@
 \usepackage{xifthen,multicol,textcomp,graphicx,listings}
 \usepackage{fontspec}
 \usepackage{tikz}
-\usetikzlibrary{arrows}
+\usepackage{amsmath}
+\usetikzlibrary{arrows,decorations.pathreplacing}
 
 \usetheme{Atlassian}
 \usecolortheme{whale}
@@ -146,6 +147,64 @@
         edge [bend left] node [left] {} (9);
 \end{tikzpicture}
 \end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Anatomy of a JID}
+	\Large
+	\begin{figure}
+		\newcommand{\tikzmark}[1]{\tikz[overlay, remember picture] \coordinate (#1);}
+
+		\tikzmark{begin}%
+		viola\tikzmark{atsep}@%
+		\tikzmark{domainpart}shakespeare.lit\tikzmark{slashsep}/%
+		\tikzmark{resourcepart}ilyria\tikzmark{end}
+
+		\tikz[overlay,remember picture] {
+			\draw[decorate,decoration={brace,raise=5mm,amplitude=20pt}] (begin.north west) -- node [above=2.5em] {JID} (end.north east) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=5pt,mirror}] (begin.south west) -- node[below of=begin, below=-1.25em] {\small localpart} (atsep.south west) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=10pt,mirror}] (domainpart.south west) -- node[below of=begin, below=-1em] {\tiny domainpart} (slashsep.south west) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=5pt,mirror}] (resourcepart.south east) -- node[below of=begin, below=-1.25em] {\tiny resourcepart} (end.south east) ;
+		}
+	\end{figure}
+\end{frame}
+\begin{frame}
+	\frametitle{Anatomy of a JID}
+	\Large
+	\begin{figure}
+		\newcommand{\tikzmark}[1]{\tikz[overlay, remember picture] \coordinate (#1);}
+
+		\tikzmark{begin}%
+		viola\tikzmark{atsep}@%
+		\tikzmark{domainpart}shakespeare.lit\tikzmark{slashsep}/%
+		\tikzmark{resourcepart}ilyria\tikzmark{end}
+
+		\tikz[overlay,remember picture] {
+			\draw[decorate,decoration={brace,raise=5mm,amplitude=20pt}] (begin.north west) -- node [above=2.5em] {JID} (end.north east) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=5pt,mirror}] (begin.south west) -- node[below of=begin, below=-1.25em] {\tiny localpart} (atsep.south west) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=10pt,mirror}] (domainpart.south west) -- node[below of=begin, below=-1em] {\small domainpart} (slashsep.south west) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=5pt,mirror}] (resourcepart.south east) -- node[below of=begin, below=-1.25em] {\tiny resourcepart} (end.south east) ;
+		}
+	\end{figure}
+\end{frame}
+\begin{frame}
+	\frametitle{Anatomy of a JID}
+	\Large
+	\begin{figure}
+		\newcommand{\tikzmark}[1]{\tikz[overlay, remember picture] \coordinate (#1);}
+
+		\tikzmark{begin}%
+		viola\tikzmark{atsep}@%
+		\tikzmark{domainpart}shakespeare.lit\tikzmark{slashsep}/%
+		\tikzmark{resourcepart}ilyria\tikzmark{end}
+
+		\tikz[overlay,remember picture] {
+			\draw[decorate,decoration={brace,raise=5mm,amplitude=20pt}] (begin.north west) -- node [above=2.5em] {JID} (end.north east) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=5pt,mirror}] (begin.south west) -- node[below of=begin, below=-1.25em] {\tiny localpart} (atsep.south west) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=10pt,mirror}] (domainpart.south west) -- node[below of=begin, below=-1em] {\tiny domainpart} (slashsep.south west) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=5pt,mirror}] (resourcepart.south east) -- node[below of=begin, below=-1.25em] {\small resourcepart} (end.south east) ;
+		}
+	\end{figure}
 \end{frame}
 
 \section[]{XMPP Core}
