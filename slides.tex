@@ -38,27 +38,7 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{eXtensible Messaging and Presence Protocol}
-	\framesubtitle{(from 10,000 feet)}
-	\begin{itemize}
-		\item XML streams (not documents)
-		\item Elements with payloads
-			\begin{itemize}
-				\item Stanzas: \textit{message, presence, iq}
-				\item Nonzas: \textit{auth, compress, \ldots}
-			\end{itemize}
-		\item Minimal core spec with extensions defined in XEP's
-		\item Federated network of servers
-	\end{itemize}
-\end{frame}
-
-\begin{frame}
-\begin{quotation}
-	``Extensions are XMPP's greatest strength, and its greatest weakness.''
-	\begin{flushright}
-		--- Pretty much everyone
-	\end{flushright}
-\end{quotation}
+	XMPP is a set of rules for exchanging data between two entities in near-real-time.
 \end{frame}
 
 \begin{frame}
@@ -81,6 +61,30 @@
 		\item \ldots
 		\end{itemize}
 	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{eXtensible Messaging and Presence Protocol}
+	\framesubtitle{(from 10,000 feet)}
+	\begin{itemize}
+		\item XML streams (not documents)
+		\item Elements with payloads
+			\begin{itemize}
+				\item Stanzas: \textit{message, presence, iq}
+				\item Nonzas: \textit{auth, compress, \ldots}
+			\end{itemize}
+		\item Minimal core spec with extensions defined in XEP's
+		\item Federated network of servers
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{quotation}
+	``Extensions are XMPP's greatest strength, and its greatest weakness.''
+	\begin{flushright}
+		--- Pretty much everyone
+	\end{flushright}
+\end{quotation}
 \end{frame}
 
 \begin{frame}
@@ -731,6 +735,20 @@ invent new stream level elements, and never modify core protocol.
 	battery and bandwidth. Historically, mobile \emph{clients} have been very bad.
 \end{frame}
 
+\begin{frame}[fragile]
+	\frametitle{\xep[Client State Indication (CSI)]{0352}}
+	Clients indicate when they become ``inactive'' (screen goes off, app loses
+	focus, etc.) or ``active'' with some simple nonza's. Server does what it wants
+	with that data (eg. don't send presence or typing notifications and start
+	sending push notifications).
+	\vspace*{\fill}
+\begin{lstlisting}[frame=single,language=xml]
+<active xmlns='urn:xmpp:csi:0'/>
+<inactive xmlns='urn:xmpp:csi:0'/>
+\end{lstlisting}
+\vspace*{\fill}
+\end{frame}
+
 \begin{frame}
 	\frametitle{\xep[Mobile Considerations]{0268}}
 	\begin{flushleft}
@@ -746,20 +764,6 @@ invent new stream level elements, and never modify core protocol.
 		Disclaimer: I wrote this one and don't do much mobile development. It's
 		probably all wrong (but seems to be working out so far).
 	\end{flushleft}
-\end{frame}
-
-\begin{frame}[fragile]
-	\frametitle{\xep[Client State Indication (CSI)]{0352}}
-	Clients indicate when they become ``inactive'' (screen goes off, app loses
-	focus, etc.) or ``active'' with some simple nonza's. Server does what it wants
-	with that data (eg. don't send presence or typing notifications and start
-	sending push notifications).
-	\vspace*{\fill}
-\begin{lstlisting}[frame=single,language=xml]
-<active xmlns='urn:xmpp:csi:0'/>
-<inactive xmlns='urn:xmpp:csi:0'/>
-\end{lstlisting}
-\vspace*{\fill}
 \end{frame}
 
 \begin{frame}
