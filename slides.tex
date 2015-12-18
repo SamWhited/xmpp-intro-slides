@@ -777,4 +777,28 @@ invent new stream level elements, and never modify core protocol.
 	stream hasn't timed out yet. Like most things, the answer is probably MAM.
 \end{frame}
 
+\newfontfamily\calluna{Calluna}
+\begin{frame}
+	\Large
+	\calluna
+	\begin{figure}
+	{\color{AshGray}%
+		\tikzmark{begin}sam\tikzmark{atsep}@%
+		\tikzmark{domainpart}\textcolor{Cyan}{SamWhited}\tikzmark{tld}.com\tikzmark{end}%
+	}
+
+		\tikz[overlay,remember picture] {
+			\draw[decorate,decoration={brace,raise=5mm,amplitude=15pt}] (begin.north
+			west) -- node [above=1.75em] {\small email \& jid} (end.north east) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=5pt,mirror}]
+			(begin.south west) -- node[below of=begin, below=-1.35em] {\tiny me} (atsep.south west) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=5pt,mirror}]
+			(atsep.south west) -- node[below of=begin, below=-1.35em] {\tiny twitter
+			\addfontfeature{Variant=1}{\&} hipchat } (tld.south west) ;
+			\draw[decorate,decoration={brace,raise=6mm,amplitude=10pt,mirror}]
+			(domainpart.south west) -- node[below of=begin, below=-.125em] {\tiny blog} (end.south west) ;
+		}
+	\end{figure}
+\end{frame}
+
 \end{document}
