@@ -6,7 +6,7 @@
 \usepackage{tikz,amsmath,xmpp}
 \usetikzlibrary{arrows,decorations.pathreplacing}
 
-\usetheme{Atlassian}
+\usetheme{Jabber}
 \usecolortheme{whale}
 \beamertemplatenavigationsymbolsempty
 
@@ -14,11 +14,11 @@
 \subtitle{Protocol mechanics and common patterns}
 \author[]{%
 	Sam Whited\\*%
-	{\tiny XSF Editor / HipChat Platform Developer}\\*%
+	{\tiny XSF Editor / Council}\\*%
 	{\tiny JID: \texttt{\href{xmpp:sam@samwhited.com}{sam@samwhited.com}}}%
 }
-\date{2015--12--18}
-\titlegraphic{\includegraphics[width=20mm]{images/hipchat.png}\hspace*{.25\textwidth}\includegraphics[width=20mm]{images/atlassian.png}}
+\date{2017--11--01}
+\titlegraphic{\includegraphics[width=20mm]{images/cf-logo-v-rgb.png}\hspace*{.25\textwidth}\includegraphics[width=20mm]{images/xmpp.png}}
 
 % Define a font family that supports IPA characters.
 \newfontfamily\ipa{Charis SIL}
@@ -38,7 +38,7 @@
 \end{frame}
 
 \begin{frame}
-	XMPP is a set of rules for exchanging data between two entities in near-real-time.
+	XMPP is a network protocol for exchanging data between two entities in near-real-time.
 \end{frame}
 
 \begin{frame}
@@ -49,7 +49,7 @@
 		\item IETF
 		\begin{itemize}
 			\item \xmppcore\\*(XML-RPC, IoT, RSS/Atom streams, etc.)
-			\item \xmppim\ (HipChat!)
+			\item \xmppim
 			\item \xmppaddr
 		\end{itemize}
 	\item XSF
@@ -64,6 +64,15 @@
 \end{frame}
 
 \begin{frame}
+\begin{quotation}
+	``Extensions are XMPP's greatest strength, and its greatest weakness.''
+	\begin{flushright}
+		--- Pretty much everyone
+	\end{flushright}
+\end{quotation}
+\end{frame}
+
+\begin{frame}
 	\frametitle{eXtensible Messaging and Presence Protocol}
 	\framesubtitle{(from 10,000 feet)}
 	\begin{itemize}
@@ -71,20 +80,11 @@
 		\item Elements with payloads
 			\begin{itemize}
 				\item Stanzas: \textit{message, presence, iq}
-				\item Nonzas: \textit{auth, compress, \ldots}
+				\item Other: \textit{auth, compress, \ldots}
 			\end{itemize}
 		\item Minimal core spec with extensions defined in XEP's
 		\item Federated network of servers
 	\end{itemize}
-\end{frame}
-
-\begin{frame}
-\begin{quotation}
-	``Extensions are XMPP's greatest strength, and its greatest weakness.''
-	\begin{flushright}
-		--- Pretty much everyone
-	\end{flushright}
-\end{quotation}
 \end{frame}
 
 \begin{frame}
@@ -175,6 +175,21 @@
 	\frametitle{Anatomy of a JID}
 	\Large
 	\begin{figure}
+		\tikzmark{begin}\textcolor{Rosie}{viola}\tikzmark{atsep}\textcolor{Rosie}{@}%
+		\tikzmark{domainpart}\textcolor{Rosie}{shakespeare.lit}\tikzmark{slashsep}/%
+		\tikzmark{resourcepart}ilyria\tikzmark{end}
+
+		\tikz[overlay,remember picture] {
+			\draw[decorate,decoration={brace,raise=5mm,amplitude=20pt}] (begin.north west) -- node [above=2.5em] {JID} (end.north east) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=10pt,mirror}] (begin.south west) -- node[below of=begin, below=-1em] {\small Bare JID} (slashsep.south west) ;
+			\draw[decorate,decoration={brace,raise=2mm,amplitude=5pt,mirror}] (resourcepart.south east) -- node[below of=begin, below=-1.25em] {\tiny resourcepart} (end.south east) ;
+		}
+	\end{figure}
+\end{frame}
+\begin{frame}
+	\frametitle{Anatomy of a JID}
+	\Large
+	\begin{figure}
 		\tikzmark{begin}viola\tikzmark{atsep}@%
 		\tikzmark{domainpart}shakespeare.lit\tikzmark{slashsep}/%
 		\tikzmark{resourcepart}\textcolor{CheetoOrange}{ilyria}\tikzmark{end}
@@ -195,9 +210,9 @@
 	\frametitle{Stream's}
 	\begin{itemize}
 		\item Client first
-		\item Two streams (input and output)
-		\item Streams are restarted when their state changes (eg. TLS or stream
-			compression is started, feature negotiation happens, etc.)
+		\item Two streams, input and output, over one TCP socket
+		\item As a security measure, streams are restarted when their state changes
+			(eg. TLS or stream compression)
 		\item Event based and pipelined (async communication)
 	\end{itemize}
 \end{frame}
@@ -554,15 +569,16 @@
 \end{frame}
 }
 
-\begin{frame}
-	\vspace*{\fill}
-	\includegraphics[width=.75\textwidth]{images/deeper.jpg}
-\end{frame}
+% Inception graphic was funny, but possibly misleading. Streams aren't nested,
+% they're a restart.
+%\begin{frame}
+%	\vspace*{\fill}
+%	\includegraphics[width=.75\textwidth]{images/deeper.jpg}
+%\end{frame}
 
 \subsection[]{Inside the stream}
 \begin{frame}
 \subsectionpage
-\centerline{(post resource binding)}
 \end{frame}
 
 \begin{frame}
@@ -584,8 +600,7 @@
 		\item \stanza{presence}
 	\end{itemize}
 
-	Generally speaking, these should be the only things sent at the top level of
-	an XMPP stream (with a few exceptions, eg. \xep{0198} keep-alive's).
+	These are the only routable elements in an XMPP stream.
 \end{frame}
 
 \begin{frame}[fragile]
@@ -593,12 +608,13 @@
 	\begin{itemize}
 	\item One-to-one
 	\item Fire and forget
-	\item No delivery guarantee (ack)
-	\item Useful for anything that does not require a response (chats, alerts, log lines, etc.)
+	\item No ack
+	\item Useful for anything that does not require a response (chats, alerts,
+		logging, etc.)
 	\end{itemize}
 	\begin{lstlisting}[frame=single,language=xml]
 <message id='262' type='chat'
-  to='feste@shakespeare.lit/house'>
+         to='feste@shakespeare.lit/house'>
   <body>
     What&apos;s a drunken man like, fool?
   </body>
@@ -612,19 +628,19 @@
 	\frametitle{\stanza{iq} (``Information query'')}
 		\begin{itemize}
 		\item One-to-one
-		\item MUST send a response
-		\item Optional at-least-once delivery (cache and resend if no result)
+		\item Acked
+		\item Optional at-least-once delivery
 		\end{itemize}
 \begin{lstlisting}[frame=single,language=xml]
 <iq from='capulet.lit'
-  to='juliet@capulet.lit/balcony'
-  id='s2c1' type='get'>
+    to='juliet@capulet.lit/balcony'
+    id='s2c1' type='get'>
   <ping xmlns='urn:xmpp:ping'/>
 </iq>
 
 <iq to='capulet.lit'
-  from='juliet@capulet.lit/balcony'
-  id='s2c1' type='result'/>
+    from='juliet@capulet.lit/balcony'
+    id='s2c1' type='result'/>
 \end{lstlisting}
 \end{frame}
 
@@ -637,8 +653,8 @@
 		messages, etc.)
 	\end{itemize}
 \begin{lstlisting}[frame=single,language=xml]
-<presence id='24'
-  from='prospero@shakespeare.lit/cell'>
+<presence id='aeg8y7pd'
+          from='prospero@shakespeare.lit/cell'>
   <status>
     Now my charms are all o&apos;erthrown
   </status>
@@ -787,6 +803,63 @@ invent new stream level elements, and never modify core protocol.
 
 	Has some problems around ``zombie state's'' where clients are offline, but the
 	stream hasn't timed out yet. Like most things, the answer is probably MAM.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Services}
+	\begin{itemize}
+		\item\href{https://jabber.at/}{jabber.at} (IM)
+		\item\href{https://account.conversations.im/}{Conversations.im} (IM)
+		\item\href{https://developers.google.com/cloud-print/docs/rawxmpp}{Google Cloud Print (GCP)}
+		\item\href{https://firebase.google.com/docs/cloud-messaging/server}{Firebase
+			Cloud Messaging} (alerting)
+		\item\href{https://meet.jit.si/}{Jitsi Meet} (video conferencing)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Servers}
+	\begin{itemize}
+		\item\href{https://prosody.im/}{Prosody} (Lua)
+		\item\href{https://www.ejabberd.im/}{Ejabberd} (Erlang)
+		\item\href{https://www.erlang-solutions.com/products/mongooseim.html}{MongooseIM}
+			(Erlang)
+		\item\href{https://isode.com/products/m-link.html}{M-Link} (C++)
+		\item\href{http://igniterealtime.org/projects/openfire/index.jsp}{Openfire}
+			(Java)
+		\item\href{http://tigase.net/content/tigase-xmpp-server}{Tigase} (Java)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{IM Clients}
+	\begin{itemize}
+		\item\href{https://chatsecure.org/}{ChatSecure} (iOS)
+		\item\href{https://conversations.im/}{Conversations} (Android)
+		\item\href{https://github.com/dino/dino}{Dino} (Linux, OSX, Windows)
+		\item\href{https://gajim.org/}{Gajim} (Linux, Windows)
+		\item\href{https://support.apple.com/explore/messages}{Apple Messages} (OSX)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Libraries}
+	\begin{itemize}
+		\item JVM (Java, Clojure, Scala, etc.)
+			\begin{itemize}
+				\item\href{https://www.igniterealtime.org/projects/smack/index.jsp}{Smack}
+				\item\href{http://xmpp.rocks/}{Babbler}
+			\end{itemize}
+		\item Python
+			\begin{itemize}
+				\item\href{https://docs.zombofant.net/aioxmpp/devel/}{aioxmpp}
+				\item\href{https://twistedmatrix.com/trac/wiki/TwistedWords}{Words (Twisted})
+			\end{itemize}
+		\item Lua: \href{http://matthewwild.co.uk/projects/verse/verse_doc.xml}{Verse}
+		\item Go: \href{https://godoc.org/mellium.im/xmpp}{\texttt{mellium.im/xmpp}}
+		\item Rust: \href{https://crates.io/crates/xmpp}{xmpp-rs}
+		\item JavaScript: \href{https://github.com/legastero/stanza.io}{Stanza.io}
+	\end{itemize}
 \end{frame}
 
 \newfontfamily\calluna{Calluna}
