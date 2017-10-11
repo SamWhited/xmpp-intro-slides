@@ -4,6 +4,7 @@
 \usepackage{xifthen,multicol,textcomp,graphicx}
 \usepackage{fontspec}
 \usepackage{tikz,amsmath,xmpp}
+\usepackage[binary-units=true]{siunitx}
 \usetikzlibrary{arrows,decorations.pathreplacing}
 
 \usetheme{Jabber}
@@ -38,13 +39,15 @@
 \end{frame}
 
 \begin{frame}
-	XMPP is a network protocol for exchanging data between two entities in near-real-time.
+	XMPP is a network protocol for exchanging data between two entities in
+	near-real-time.
 \end{frame}
 
 \begin{frame}
 	\frametitle{Standards}
 	XMPP standardization managed by the IETF. Responsibility for extensions
 	delegated to the XMPP Standards Foundation.
+
 	\begin{itemize}
 		\item IETF
 		\begin{itemize}
@@ -61,15 +64,6 @@
 		\item \ldots
 		\end{itemize}
 	\end{itemize}
-\end{frame}
-
-\begin{frame}
-\begin{quotation}
-	``Extensions are XMPP's greatest strength, and its greatest weakness.''
-	\begin{flushright}
-		--- Pretty much everyone
-	\end{flushright}
-\end{quotation}
 \end{frame}
 
 \begin{frame}
@@ -120,6 +114,10 @@
 \end{frame}
 
 \newcommand*{\tikzmark}[1]{\tikz[overlay, remember picture] \coordinate ({#1});}
+
+\section[]{XMPP Address Format}
+\subsection[]{\href{https://tools.ietf.org/html/rfc7622}{RFC 7622}}
+\frame{\sectionpage\subsectionpage}
 
 \begin{frame}
 	\frametitle{Anatomy of a JID}
@@ -204,7 +202,8 @@
 \end{frame}
 
 \section[]{XMPP Core}
-\frame{\sectionpage}
+\subsection[]{\href{https://tools.ietf.org/html/rfc6120}{RFC 6120}}
+\frame{\sectionpage\subsectionpage}
 
 \begin{frame}
 	\frametitle{Stream's}
@@ -664,54 +663,42 @@
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}
-	\frametitle{Stanza Types}
-	\begin{flushleft}
-		Messages and presences MAY have a `type' attribute, and IQ's MUST have one.
-		For messages, the type is just a hint.
-	\end{flushleft}
-	\begin{multicols}{3}
-		Message types
-		\begin{itemize}
-			\item\textit{normal}
-			\item\textit{chat}
-			\item\textit{groupchat}
-			\item\textit{headline}
-			\item\textit{error}
-		\end{itemize}
-		\columnbreak
-		IQ types
-		\begin{itemize}
-			\item\textit{get}
-			\item\textit{set}
-			\item\textit{result}
-			\item\textit{error}
-		\end{itemize}
-		\columnbreak
-		Presence types
-		\begin{itemize}
-			\item\textit{unavailable}
-			\item\textit{subscribe}
-			\item\textit{subscribed}
-			\item\textit{unsubscribe}
-			\item\textit{unsubscribed}
-			\item\textit{probe}
-			\item\textit{error}
-		\end{itemize}
-	\end{multicols}
-\end{frame}
-
-\begin{frame}
-\begin{quotation}
-``XMPP is Sacred''
-\begin{flushright}
----\xep[XMPP Design Guidelines]{0134}
-\end{flushright}
-\vspace*{2em}
-When designing a new extension, think very hard about your life before you
-invent new stream level elements, and never modify core protocol.
-\end{quotation}
-\end{frame}
+%\begin{frame}
+%	\frametitle{Stanza Types}
+%	\begin{flushleft}
+%		Messages and presences MAY have a `type' attribute, and IQ's MUST have one.
+%		For messages, the type is just a hint.
+%	\end{flushleft}
+%	\begin{multicols}{3}
+%		Message types
+%		\begin{itemize}
+%			\item\textit{normal}
+%			\item\textit{chat}
+%			\item\textit{groupchat}
+%			\item\textit{headline}
+%			\item\textit{error}
+%		\end{itemize}
+%		\columnbreak
+%		IQ types
+%		\begin{itemize}
+%			\item\textit{get}
+%			\item\textit{set}
+%			\item\textit{result}
+%			\item\textit{error}
+%		\end{itemize}
+%		\columnbreak
+%		Presence types
+%		\begin{itemize}
+%			\item\textit{unavailable}
+%			\item\textit{subscribe}
+%			\item\textit{subscribed}
+%			\item\textit{unsubscribe}
+%			\item\textit{unsubscribed}
+%			\item\textit{probe}
+%			\item\textit{error}
+%		\end{itemize}
+%	\end{multicols}
+%\end{frame}
 
 \begin{frame}[fragile]
 	\frametitle{Namespacing}
@@ -731,8 +718,29 @@ invent new stream level elements, and never modify core protocol.
 \end{lstlisting}
 \end{frame}
 
+\begin{frame}
+\begin{quotation}
+``XMPP is Sacred''
+\begin{flushright}
+---\xep[XMPP Design Guidelines]{0134}
+\end{flushright}
+\vspace*{2em}
+When designing a new extension, think very hard about your life before you
+invent new stream level elements, and never modify core protocol.
+\end{quotation}
+\end{frame}
+
 \section[]{Useful Extensions}
 \frame{\sectionpage}
+
+\begin{frame}
+\begin{quotation}
+	``Extensions are XMPP's greatest strength, and its greatest weakness.''
+	\begin{flushright}
+		--- Pretty much everyone
+	\end{flushright}
+\end{quotation}
+\end{frame}
 
 \begin{frame}
 	\frametitle{\xep[Message Carbons]{0280}}
@@ -758,9 +766,12 @@ invent new stream level elements, and never modify core protocol.
 \end{frame}
 
 \begin{frame}
-	\frametitle{Myth № 1: XMPP is bad on mobile}
+	\frametitle{Myth: XMPP is bad on mobile}
 	Turns out that XMPP is actually \emph{very} good on mobile devices, both on
-	battery and bandwidth. Historically, mobile \emph{clients} have been very bad.
+	battery and bandwidth.%
+	\footnote{\href{https://www.isode.com/whitepapers/xmpp-constrained-bandwidth.html}{Isode}
+	has deployed XMPP over \SI[per-mode=symbol]{9600}{\bit\per\second} SATCOM and
+	STANAG 5066 HF radio} Historically, mobile \emph{clients} have been very bad.
 \end{frame}
 
 \begin{frame}[fragile]
@@ -814,6 +825,7 @@ invent new stream level elements, and never modify core protocol.
 		\item\href{https://firebase.google.com/docs/cloud-messaging/server}{Firebase
 			Cloud Messaging} (alerting)
 		\item\href{https://meet.jit.si/}{Jitsi Meet} (video conferencing)
+		\item\href{https://twitter.com/Midar3/status/839059229289943041}{Nintendo Switch notifications}
 	\end{itemize}
 \end{frame}
 
