@@ -86,29 +86,29 @@
 \begin{tikzpicture}[<->,>=stealth',shorten >=1pt,auto,node distance=3cm,
                     thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
 
-  \node[main node] (1) {Server 1};
-  \node[main node] (2) [below left of=1] {S2};
-  \node[main node] (3) [below right of=2] {S3};
-  \node[main node] (4) [right of=1] {S4};
+  \node[main node] (1)                     {Server 1};
+  \node[main node] (2)  [below left  of=1] {S2};
+  \node[main node] (3)  [below right of=2] {S3};
+  \node[main node] (4)  [      right of=1] {S4};
 
-  \node[main node] (5) [above left of=2] {C};
-  \node[main node] (6) [      left of=2] {C};
-  \node[main node] (7) [below left of=2] {C};
-  \node[main node] (8) [right of=4] {C};
-  \node[main node] (9) [above right of=4] {C};
+  \node[main node] (5)  [above left  of=2] {C};
+  \node[main node] (6)  [      left  of=2] {C};
+  \node[main node] (7)  [below left  of=2] {C};
+  \node[main node] (9)  [above right of=4] {C};
+  \node[main node] (8)  [      right of=4] {C};
   \node[main node] (10) [below right of=1] {C};
 
   \path[every node/.style={font=\sffamily\small}]
-    (1) edge node [right] {} (10)
-    (2) edge [bend left] node [right] {} (1)
-        edge node [right] {} (5)
-        edge node [right] {} (6)
-        edge node [right] {} (7)
-    (3) edge [bend left] node [right] {} (2)
-        edge [bend right] node [right] {} (1)
-    (4) edge [bend left] node[right] {} (1)
-        edge node [left] {} (8)
-        edge [bend left] node [left] {} (9);
+    (1) edge node [     right]              {} (10)
+    (2) edge      [bend  left] node [right] {} (1)
+        edge node [     right]              {} (5)
+        edge node [     right]              {} (6)
+        edge node [     right]              {} (7)
+    (3) edge      [bend  left] node [right] {} (2)
+        edge      [bend right] node [right] {} (1)
+    (4) edge      [bend  left] node [right] {} (1)
+        edge node [      left]              {} (8)
+        edge      [bend  left] node [left]  {} (9);
 \end{tikzpicture}
 \end{center}
 \end{frame}
