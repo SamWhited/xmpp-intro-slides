@@ -17,17 +17,21 @@
 \newcommand*{\stanza}[1]{\xml{#1/}}
 \newcommand*{\nonza}[1]{\xml{#1/}}
 \newcommand*{\hcstatus}[1]{\textit{Status}: #1\ by HipChat}
+\newcommand*{\rfc}[2][]{\href{https://tools.ietf.org/html/rfc#2}{RFC #2\ifthenelse{\isempty{#1}}{\relax}{: #1}}}
 
 \makeatletter
 \newcommand*{\xmppim}{\@ifstar{\@xmppimStar}{\@xmppimNoStar}}
-\newcommand*{\@xmppimNoStar}{RFC 6121: XMPP IM}
+\newcommand*{\@xmppimNoStar}{\rfc[XMPP IM]{6121}}
 \newcommand*{\@xmppimStar}{XMPP-IM}
 \newcommand*{\xmppcore}{\@ifstar{\@xmppcoreStar}{\@xmppcoreNoStar}}
-\newcommand*{\@xmppcoreNoStar}{RFC 6120: XMPP Core}
+\newcommand*{\@xmppcoreNoStar}{\rfc[XMPP Core]{6120}}
 \newcommand*{\@xmppcoreStar}{XMPP-CORE}
 \newcommand*{\xmppaddr}{\@ifstar{\@xmppaddrStar}{\@xmppaddrNoStar}}
-\newcommand*{\@xmppaddrNoStar}{RFC 7622: XMPP Address Format}
+\newcommand*{\@xmppaddrNoStar}{\rfc[XMPP Address Format]{7622}}
 \newcommand*{\@xmppaddrStar}{XMPP-ADDR}
+\newcommand*{\xmpptls}{\@ifstar{\@xmpptlsStar}{\@xmpptlsNoStar}}
+\newcommand*{\@xmpptlsNoStar}{\rfc[Use of TLS in XMPP]{7590}}
+\newcommand*{\@xmpptlsStar}{XMPP-TLS}
 \makeatother
 
 \definecolor{maroon}{rgb}{0.5,0,0}

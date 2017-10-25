@@ -1,17 +1,24 @@
-\PassOptionsToPackage{usenames,dvipsnames}{xcolor}
+\PassOptionsToPackage{usenames,dvipsnames,xcolor=x11names,table}{xcolor}
 \documentclass[xelatex,aspectratio=169]{beamer}
 
 \usepackage{xifthen,multicol,textcomp,graphicx}
 \usepackage{fontspec}
 \usepackage{tikz,amsmath,xmpp}
 \usepackage[binary-units=true]{siunitx}
+\usepackage{array, booktabs}
+%\usepackage{graphicx}
+%\usepackage[x11names]{xcolor}
+%\usepackage{colortbl}
+\usepackage{caption}
+\DeclareCaptionFont{blue}{\color{Blue}}
+\newcommand{\foo}{\color{Blue}\makebox[0pt]{\textbullet}\hskip-0.5pt\vrule width 1pt\hspace{\labelsep}}
 \usetikzlibrary{arrows,decorations.pathreplacing}
 
 \usetheme{Jabber}
 \usecolortheme{whale}
 \beamertemplatenavigationsymbolsempty
 
-\title[]{XMPP}
+\title[]{Extensible Messaging and Presence Protocol (XMPP)}
 \subtitle{Protocol Introduction and Overview}
 \author[]{%
 	Sam Whited\\*%
@@ -51,19 +58,40 @@
 	\begin{itemize}
 		\item IETF
 		\begin{itemize}
-			\item \xmppcore\\*(XML-RPC, IoT, RSS/Atom streams, etc.)
+			\item \xmppcore
 			\item \xmppim
+			\item \xmpptls
 			\item \xmppaddr
 		\end{itemize}
 	\item XSF
 		\begin{itemize}
 			\item \xep[Multi-User Chat]{0045}
 			\item \xep[Stream Management]{0198}
-			\item \xep[Entity Versioning]{0366}
 			\item \xep[Message Attaching]{0367}
+			\item \xep[XMPP Compliance Suites 2017]{0387}
 		\item \ldots
 		\end{itemize}
 	\end{itemize}
+\end{frame}
+
+\begin{frame}
+\vspace*{-0.25cm}
+\begin{table}
+\renewcommand\arraystretch{1.4}\arrayrulecolor{Blue}
+\captionsetup{singlelinecheck=false, font=blue, labelfont=sc, labelsep=quad}
+%\caption{Timeline}\vskip -1.5ex
+\begin{tabular}{@{\,}r <{\hskip 2pt} !{\foo} >{\raggedright\arraybackslash}p{5cm}}
+\toprule
+\addlinespace[1.5ex]
+1999 & XMPP created by the Jabber open-source community. \\
+2002 & IETF forms the XMPP WG. \\
+2008 & Cisco aquires Jabber, Inc. \\
+2004 & \rfc{3920}, \rfc{3921}, \rfc{3922}, and \rfc{3923} approved. \\
+2011 & RFCs superseded by \rfc{6120}, \rfc{6121}, and \rfc{6122}. \\
+2014 & Websocket subprotocol \rfc{7395} created. \\
+2015 & Address format superseded by \rfc{7622}, TLS updates in \rfc{7590}. \\
+\end{tabular}
+\end{table}
 \end{frame}
 
 \begin{frame}
@@ -86,23 +114,23 @@
 \begin{tikzpicture}[<->,>=stealth',shorten >=1pt,auto,node distance=3cm,
                     thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
 
-  \node[main node] (1)                     {Server 1};
-  \node[main node] (2)  [below left  of=1] {S2};
-  \node[main node] (3)  [below right of=2] {S3};
-  \node[main node] (4)  [      right of=1] {S4};
+  \node[main node] (1)                     {Server 2};
+  \node[main node] (2)  [below left  of=1] {S1};
+  \node[main node] (3)  [below right of=2] {S};
+  \node[main node] (4)  [      right of=1] {S};
 
-  \node[main node] (5)  [above left  of=2] {C};
+  \node[main node] (5)  [above left  of=2] {C1};
   \node[main node] (6)  [      left  of=2] {C};
   \node[main node] (7)  [below left  of=2] {C};
   \node[main node] (9)  [above right of=4] {C};
   \node[main node] (8)  [      right of=4] {C};
-  \node[main node] (10) [below right of=1] {C};
+  \node[main node] (10) [below right of=1] {C2};
 
   \path[every node/.style={font=\sffamily\small}]
-    (1) edge node [     right]              {} (10)
-    (2) edge      [bend  left] node [right] {} (1)
-        edge node [     right]              {} (5)
-        edge node [     right]              {} (6)
+		(1) edge node [     right]              {\only<4>{c2s}} (10)
+		(2) edge      [bend  left] node [right] {\only<3>{s2s}} (1)
+				edge node [     right]              {\only<2>{c2s}} (5)
+				edge node [     right]              {} (6)
         edge node [     right]              {} (7)
     (3) edge      [bend  left] node [right] {} (2)
         edge      [bend right] node [right] {} (1)
